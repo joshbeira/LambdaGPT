@@ -43,7 +43,7 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 bindir     = "/dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/install/x86_64-linux/2fcfeb28e342e22c83a6946cc3264c9633761ec0918683892cadfdcbb79e35d9/9.4.8/bin"
-libdir     = "/dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/install/x86_64-linux/2fcfeb28e342e22c83a6946cc3264c9633761ec0918683892cadfdcbb79e35d9/9.4.8/lib/x86_64-linux-ghc-9.4.8/lgpt-0.1.0.0-N0dID16CdgBGqyvNfxYZo-lgpt-test"
+libdir     = "/dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/install/x86_64-linux/2fcfeb28e342e22c83a6946cc3264c9633761ec0918683892cadfdcbb79e35d9/9.4.8/lib/x86_64-linux-ghc-9.4.8/lgpt-0.1.0.0-EMaLMzqm6ZNC6qkFhAEJxT-lgpt-test"
 dynlibdir  = "/dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/install/x86_64-linux/2fcfeb28e342e22c83a6946cc3264c9633761ec0918683892cadfdcbb79e35d9/9.4.8/lib/x86_64-linux-ghc-9.4.8"
 datadir    = "/dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/install/x86_64-linux/2fcfeb28e342e22c83a6946cc3264c9633761ec0918683892cadfdcbb79e35d9/9.4.8/share/x86_64-linux-ghc-9.4.8/lgpt-0.1.0.0"
 libexecdir = "/dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/install/x86_64-linux/2fcfeb28e342e22c83a6946cc3264c9633761ec0918683892cadfdcbb79e35d9/9.4.8/libexec/x86_64-linux-ghc-9.4.8/lgpt-0.1.0.0"

@@ -33,6 +33,8 @@ library
     , megaparsec
     , mtl
     , time
+    , http-conduit  
+    , aeson         
   default-language: GHC2021
 
 executable lgpt-tui
@@ -53,6 +55,8 @@ executable lgpt-tui
     , megaparsec
     , mtl
     , time
+    , http-conduit  
+    , aeson         
   default-language: GHC2021
 
 test-suite lgpt-test
@@ -82,4 +86,6 @@ test-suite lgpt-test
     , temporary
     , text
     , time
+    , http-conduit  
+    , aeson         
   default-language: GHC2021

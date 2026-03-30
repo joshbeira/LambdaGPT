@@ -20,6 +20,16 @@
   (major1) == 2 && (major2) <  14 || \
   (major1) == 2 && (major2) == 14 && (minor) <= 3)
 #endif /* MIN_VERSION_QuickCheck */
+/* package aeson-2.2.3.0 */
+#ifndef VERSION_aeson
+#define VERSION_aeson "2.2.3.0"
+#endif /* VERSION_aeson */
+#ifndef MIN_VERSION_aeson
+#define MIN_VERSION_aeson(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  2 || \
+  (major1) == 2 && (major2) == 2 && (minor) <= 3)
+#endif /* MIN_VERSION_aeson */
 /* package ansi-terminal-1.1.2 */
 #ifndef VERSION_ansi_terminal
 #define VERSION_ansi_terminal "1.1.2"
@@ -60,6 +70,16 @@
   (major1) == 0 && (major2) <  6 || \
   (major1) == 0 && (major2) == 6 && (minor) <= 7)
 #endif /* MIN_VERSION_containers */
+/* package http-conduit-2.3.9.1 */
+#ifndef VERSION_http_conduit
+#define VERSION_http_conduit "2.3.9.1"
+#endif /* VERSION_http_conduit */
+#ifndef MIN_VERSION_http_conduit
+#define MIN_VERSION_http_conduit(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  3 || \
+  (major1) == 2 && (major2) == 3 && (minor) <= 9)
+#endif /* MIN_VERSION_http_conduit */
 /* package lgpt-0.1.0.0 */
 #ifndef VERSION_lgpt
 #define VERSION_lgpt "0.1.0.0"
@@ -263,7 +283,7 @@
 #endif /* MIN_TOOL_VERSION_strip */
 
 #ifndef CURRENT_COMPONENT_ID
-#define CURRENT_COMPONENT_ID "lgpt-0.1.0.0-N0dID16CdgBGqyvNfxYZo-lgpt-test"
+#define CURRENT_COMPONENT_ID "lgpt-0.1.0.0-EMaLMzqm6ZNC6qkFhAEJxT-lgpt-test"
 #endif /* CURRENT_COMPONENT_ID */
 #ifndef CURRENT_PACKAGE_VERSION
 #define CURRENT_PACKAGE_VERSION "0.1.0.0"

@@ -18,6 +18,8 @@ dependencies:
 - containers
 - mtl
 - time
+- http-conduit  
+- aeson          
 
 default-extensions:
 - TypeSynonymInstances
