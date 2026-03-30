@@ -1,5 +1,5 @@
 /dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/dist/x86_64-linux/Cabal-3.8.1.0/build/autogen/Paths_lgpt.hs:
-  hash: 4ea553247d37f505efccaeaf3a22220323460aa16f46cef0b2bac7c37971a21c
+  hash: 9bbd09af8d4c5cc44e9e6c1976be711b593933036d93cc749b82364292eafbc7
 /dcs/25/u5683397/Documents/cs141/cw2/lgpt/.stack-work/dist/x86_64-linux/Cabal-3.8.1.0/build/autogen/cabal_macros.h:
   hash: e27bcf63105a4385260523abdf1d91599de42d42ab2dbf69e9ea80c4dd598668
 /dcs/25/u5683397/Documents/cs141/cw2/lgpt/lgpt.cabal:
@@ -11,7 +11,7 @@
 /dcs/25/u5683397/Documents/cs141/cw2/lgpt/src/LGPT/Numbers.hs:
   hash: 50902d8020620cbca8bab133d2828b495959e02c5c06161bb2bbfd0342253dac
 /dcs/25/u5683397/Documents/cs141/cw2/lgpt/src/LGPT/TUI.hs:
-  hash: 63bba73d17a8d1a52a86ec9b4514276f345c1a03c7c1bb2f7b3a3f96696b63b5
+  hash: 5e254724ca85f84ef939d04f96d0f33334874cf50121baf32701cda244655468
 /modules/cs141/.ghcup/ghc/9.4.8/lib/ghc-9.4.8/lib/x86_64-linux-ghc-9.4.8/rts-1.0.2/include/ghcversion.h:
   hash: 4bc88722407a89d1efbfa9c116cd4017af6ea3ff746643032b96cef62782f5dd
 /usr/include/stdc-predef.h:

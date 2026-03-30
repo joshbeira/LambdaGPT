@@ -9,6 +9,7 @@ import Data.Time (getCurrentTime, utctDay, dayOfWeek, addDays, diffDays, fromGre
 import Data.Aeson (FromJSON(..), (.:), withObject)
 import qualified Data.Aeson.Key as K
 import Network.HTTP.Simple (httpJSONEither, getResponseBody, parseRequest_)
+import Text.Megaparsec.Byte (string')
 --------------------------------------------------------------------------------
 
 runREPL :: IO ()
@@ -44,44 +45,61 @@ readRequest str = case parse parseRequest "<stdin>" str of
 -- | Currently, the only thing λGPT understands is "Hello"...
 parseRequest :: Parser Request
 parseRequest = choice
-  [ do
-      _ <- string "Hello"
+  [ try $ do
+      _ <- string' "hello" <|> string' "hi" <|> string' "hey"
+      _ <- optional (char '.' <|> char '!' <|> char '?')
+      _ <- space
       pure Hello
+
   , try $ do
-      _ <- string "What is the weather like today?" <|> string "What is the weather like today"
+      _ <- string' "What is the weather like today?" <|> string "What is the weather like today"
       pure WeatherToday
+
   , try $ do
-      _ <- string "What is the weather like tomorrow?" <|> string "What is the weather like tommorow"
-      pure WeatherTomorrow       
+      _ <- string' "what is the weather like today"
+      _ <- optional (char '?')
+      _ <- space
+      pure WeatherToday
+
   , try $ do
-      _ <- string "What day is it tomorrow?" -- "what day is it tomorrow" has to come before "what day is it"
+      _ <- string' "what day is it tomorrow" 
+      _ <- optional (char '?')
+      _ <- space
       pure WhatDayTomorrow
+
   , try $ do
-      _ <- string "What day is it?"
+      _ <- string' "what day is it"
+      _ <- optional (char '?')
+      _ <- space
       pure WhatDay
+
   , try $ do
-        _ <- string "How long ago was "
+        _ <- string' "how long ago was "
         year <- some digitChar
         _ <- char '-'
         month <- some digitChar
         _ <- char '-'
         day <- some digitChar
-        _ <- string "?" <|> string "" -- catch the question mark if they typed it
-
+        _ <- optional (char '?')
+        _ <- space
         let targetDate = fromGregorian (read year) (read month) (read day)
         pure (HowLongAgo targetDate)
+
   , try $ do
-      _ <- string "What is "
+      _ <- string' "what is "
       expr <- parseExpr
-      _ <- string "?" <|> string "" -- catch the question mark if they typed it
+      _ <- optional (char '?')
+      _ <- space
       pure (WhatIs expr)
+
   , try $ do
-      _ <- string "Remember that " -- grab characters until we hit " is "
-      name <- someTill anySingle (string " is ") -- The rest of the string is the thing
-      thing <- some anySingle
+      _ <- string' "remember that " 
+      name <- someTill anySingle (string' " is ") 
+      thing <- someTill anySingle (optional (char '.') >> space >> eof) -- Reads until the end of the line
       pure (Remember name thing)
+
   , do
-      _ <- string "Tell me about " -- grab the name, stopping if they typed a period at the end
+      _ <- string' "Tell me about " -- grab the name, stopping if they typed a period at the end
       name <- someTill anySingle (char '.') <|> some anySingle
       pure (TellMeAbout name)
   ]
