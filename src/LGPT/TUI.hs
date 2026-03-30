@@ -21,20 +21,22 @@ import Data.Time (getCurrentTime, utctDay, dayOfWeek, addDays, diffDays, fromGre
       3. Does something based on that request (normally printing something out).
 -}
 runREPL :: IO ()
-runREPL = forever $ do
-  putStr prompt
-  req <- getLine
-  respondTo (readRequest req)
-
-
+runREPL = loop [] -- Start the chatbot with an empty memory list
+  where
+    loop :: [(String, String)] -> IO ()
+    loop memory = do
+      putStr prompt
+      req <- getLine
+      -- pass the current memory into respondTo and catch the updated memory it returns
+      newMemory <- respondTo memory (readRequest req)
+      loop newMemory -- Loop again using the new memory
 --------------------------------------------------------------------------------
 -- Parsing and responding to requests:
 
 
 -- | Our request type, the result of parsing a string.
-data Request = Unknown | Hello | WhatDay | WhatDayTomorrow | HowLongAgo Day | WhatIs Expr
-  deriving (Eq,Show)
-
+data Request = Unknown | Hello | WhatDay | WhatDayTomorrow | HowLongAgo Day | WhatIs Expr| Remember String String | TellMeAbout String
+  deriving (Eq, Show)
 
 {- | Read a request. 
 
@@ -75,38 +77,69 @@ parseRequest = choice
       expr <- parseExpr
       _ <- string "?" <|> string "" -- catch the question mark if they typed it
       pure (WhatIs expr)
+  , do
+      _ <- string "Remember that " -- grab characters until we hit " is "
+      name <- someTill anySingle (string " is ") -- The rest of the string is the thing
+      thing <- some anySingle 
+      pure (Remember name thing)
+  , do
+      _ <- string "Tell me about " -- grab the name, stopping if they typed a period at the end
+      name <- someTill anySingle (char '.') <|> some anySingle
+      pure (TellMeAbout name)    
   ]
 
 -- | Respond to a request. This is where the behaviours of λGPT will go, but 
 -- for now it just responds to "Hello".
-respondTo :: Request -> IO ()
+-- Notice the new signature: it takes Memory, and returns IO Memory
+respondTo :: [(String, String)] -> Request -> IO [(String, String)]
 
-respondTo Hello   = putStrLn "Hi there!"
+respondTo mem Hello = do
+  putStrLn "Hi there!"
+  pure mem -- Return the memory unchanged
 
-respondTo Unknown = putStrLn "I don't understand that."
+respondTo mem Unknown = do
+  putStrLn "I don't understand that."
+  pure mem
 
-respondTo WhatDay = do
-  now <- getCurrentTime           -- Get the exact current time
-  let today = utctDay now         -- Extract just the date part as yyyy-mm-dd
-  let dayStr = show (dayOfWeek today) -- Get the day of the week as a String 
+respondTo mem WhatDay = do
+  now <- getCurrentTime           
+  let today = utctDay now         
+  let dayStr = show (dayOfWeek today) 
   putStrLn ("Today is " ++ dayStr ++ ".")
+  pure mem
 
-respondTo WhatDayTomorrow = do
-  now <- getCurrentTime           -- Get the exact current time
-  let today = utctDay now         -- Extract just the date part
-  let tomorrow = addDays 1 today  -- Add 1 day to today's date
+respondTo mem WhatDayTomorrow = do
+  now <- getCurrentTime           
+  let today = utctDay now         
+  let tomorrow = addDays 1 today  
   let dayStr = show (dayOfWeek tomorrow) 
   putStrLn ("Tomorrow is " ++ dayStr ++ ".")
+  pure mem
 
-respondTo (HowLongAgo targetDate) = do
+respondTo mem (HowLongAgo targetDate) = do
   now <- getCurrentTime
   let today = utctDay now
   let days = diffDays today targetDate
   putStrLn (show targetDate ++ " was " ++ show days ++ " days ago.")  
+  pure mem
 
-respondTo (WhatIs expr) = do
+respondTo mem (WhatIs expr) = do
   let result = evaluateExpr expr
   putStrLn ("The answer is " ++ printLonghand result ++ ".")
+  pure mem
+
+-- handling the memory
+respondTo mem (Remember name thing) = do
+  putStrLn "Okay."
+  -- Add the new fact to the front of our memory list
+  pure ((name, thing) : mem)
+
+respondTo mem (TellMeAbout name) = do
+  -- lookup: searches our [(String, String)] for the name
+  case lookup name mem of
+    Just thing -> putStrLn ("Sure - " ++ name ++ " is " ++ thing ++ ".")
+    Nothing    -> putStrLn ("Sorry, I don't know anything about " ++ name ++ ".")
+  pure mem
 
 -- | Expression Parsing 
 
