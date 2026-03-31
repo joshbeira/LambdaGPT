@@ -17,6 +17,7 @@ library
       LGPT.Helpers
       LGPT.Numbers
       LGPT.TUI
+      LGPT.Weather
   other-modules:
       Paths_lgpt
   hs-source-dirs:
@@ -27,14 +28,14 @@ library
       RecordWildCards
       LambdaCase
   build-depends:
-      ansi-terminal
+      aeson
+    , ansi-terminal
     , base >=4.7 && <5
     , containers
+    , http-conduit
     , megaparsec
     , mtl
     , time
-    , http-conduit  
-    , aeson         
   default-language: GHC2021
 
 executable lgpt-tui
@@ -48,15 +49,15 @@ executable lgpt-tui
       LambdaCase
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      ansi-terminal
+      aeson
+    , ansi-terminal
     , base >=4.7 && <5
     , containers
+    , http-conduit
     , lgpt
     , megaparsec
     , mtl
     , time
-    , http-conduit  
-    , aeson         
   default-language: GHC2021
 
 test-suite lgpt-test
@@ -71,10 +72,12 @@ test-suite lgpt-test
       LambdaCase
   build-depends:
       QuickCheck
+    , aeson
     , ansi-terminal
     , base >=4.7 && <5
     , bytestring
     , containers
+    , http-conduit
     , lgpt
     , megaparsec
     , mtl
@@ -86,6 +89,4 @@ test-suite lgpt-test
     , temporary
     , text
     , time
-    , http-conduit  
-    , aeson         
   default-language: GHC2021
