@@ -1,3 +1,7 @@
+-- | This module isolates all external API interactions and JSON parsing.
+-- By moving this out of TUI.hs, we achieve a strict separation of concerns, 
+-- ensuring the main chatbot loop doesn't need to know how weather data is fetched.
+
 module LGPT.Weather 
   ( CurrentWeather(..)
   , fetchWeather 
@@ -6,6 +10,10 @@ module LGPT.Weather
 import Data.Aeson (FromJSON(..), (.:), withObject)
 import qualified Data.Aeson.Key as K
 import Network.HTTP.Simple (httpJSONEither, getResponseBody, parseRequest_)
+
+-- | I chose to create these intermediate data types to explicitly model the 
+-- nested shape of the Open-Meteo JSON response. This safely decouples the 
+-- external API's data structure from our internal CurrentWeather representation.
 
 -- | The type your chatbot expects
 data CurrentWeather = CurrentWeather 
@@ -33,7 +41,10 @@ instance FromJSON OMDaily where
     c <- daily .: K.fromString "weather_code"
     return (OMDaily t c)
 
--- | Translate Open-Meteo's WMO numeric codes into English words
+-- | Translates Open-Meteo's WMO numeric codes into user-friendly English words. 
+-- Rather than exhaustively listing all 100+ possible WMO codes, I mapped only 
+-- the most common UK weather patterns and used a catch-all "_" for the rest 
+-- to keep the implementation concise and readable.
 wmoToDesc :: Int -> String
 wmoToDesc 0 = "clear"
 wmoToDesc 1 = "mainly clear"
@@ -47,7 +58,11 @@ wmoToDesc 71 = "snowing"
 wmoToDesc 95 = "stormy"
 wmoToDesc _  = "variable"
 
--- | Fetch the weather (No API key needed!)
+-- | Fetches the weather from the Open-Meteo API. 
+-- I chose this specific API because it does not require an authentication key, 
+-- making the project portable and easy to test. 
+-- Returning "IO (Maybe CurrentWeather)" allows the program to gracefully handle 
+-- network failures (like being offline) without crashing the entire REPL.
 fetchWeather :: String -> IO (Maybe CurrentWeather)
 fetchWeather "current" = do
   let url = "https://api.open-meteo.com/v1/forecast?latitude=52.4814&longitude=-1.8998&current=temperature_2m,weather_code"

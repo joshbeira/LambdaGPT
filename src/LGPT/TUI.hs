@@ -11,6 +11,26 @@ import Text.Megaparsec.Byte (string')
 import LGPT.Weather (CurrentWeather(..), fetchWeather)
 --------------------------------------------------------------------------------
 
+-- | Represents the Syntax Tree for our mathematical expressions.
+data Expr
+  = Num Int
+  | Add Expr Expr
+  | Sub Expr Expr
+  | Mul Expr Expr
+  | That
+  deriving (Eq, Show)
+
+
+data Request = Unknown | Hello | WhatDay | WhatDayTomorrow | HowLongAgo Day | WhatIs Expr|
+              Remember String String | TellMeAbout String | WeatherToday | WeatherTomorrow
+  deriving (Eq, Show)
+
+--------------------------------------------------------------------------------
+
+-- | Starts the main read => eval => print loop. 
+-- I chose to pass the memory state [(String, String)] explicitly using recursion 
+-- rather than using the "state" monad. This keeps the IO logic straight forward 
+-- and avoids overcomplicating the simple loop structure.
 runREPL :: IO ()
 runREPL = loop [] -- Start the chatbot with an empty memory list
   where
@@ -18,30 +38,24 @@ runREPL = loop [] -- Start the chatbot with an empty memory list
     loop memory = do
       putStr prompt
       req <- getLine
-      -- pass the current memory into respondTo and catch the updated memory it returns
       newMemory <- respondTo memory (readRequest req)
       loop newMemory -- Loop again using the new memory
+
 --------------------------------------------------------------------------------
 -- Parsing and responding to requests:
 
-
--- | Our request type, the result of parsing a string.
-data Request = Unknown | Hello | WhatDay | WhatDayTomorrow | HowLongAgo Day | WhatIs Expr|
-              Remember String String | TellMeAbout String | WeatherToday | WeatherTomorrow
-  deriving (Eq, Show)
-
-{- | Read a request. 
-
-    This runs the parse function from Megaparsec, and
-    converts any failed parses into an Unknown request.
--}
+-- | Reads a request from a String.
+-- Runs the Megaparsec parser and converts any failed parses into an Unknown request.
 readRequest :: String -> Request
 readRequest str = case parse parseRequest "<stdin>" str of
   Left  err -> Unknown
   Right req -> req
 
 
--- | Currently, the only thing λGPT understands is "Hello"...
+-- | Parses user input into a Request data type.
+-- The "try" combinator is used extensively here to allow backtracking. 
+-- Because many requests share prefixes like "what is" and "what day is it", 
+-- "try" prevents the parser from consuming input and failing permanently on a partial match.
 parseRequest :: Parser Request
 parseRequest = choice
   [ try $ do
@@ -103,9 +117,47 @@ parseRequest = choice
       pure (TellMeAbout name)
   ]
 
--- | Respond to a request. This is where the behaviours of λGPT will go, but 
--- for now it just responds to "Hello".
--- Notice the new signature: it takes Memory, and returns IO Memory
+
+-- | Parses mathematical expressions from English words.
+-- I chose to use "foldl" to bundle the arithmetic operations together. 
+-- This purposefully bypasses standard BODMAS precedence, which enforces a strict 
+-- left-to-right evaluation order to mimic how natural language is read aloud.
+parseExpr :: Parser Expr
+parseExpr = do
+  firstExpr <- parseNumOrThat
+  operations <- many parseOpAndNum
+  -- foldl for left-to-right
+  pure ( foldl (\acc (opCtor, nextExpr) -> opCtor acc nextExpr) firstExpr operations )
+  where
+    -- A helper that looks for "that" or a longhand number
+    parseNumOrThat :: Parser Expr
+    parseNumOrThat = choice
+      [ do
+          _ <- string "that"
+          pure That
+      , do
+          Num <$> parseLonghand
+      ]
+
+    parseOpAndNum :: Parser (Expr -> Expr -> Expr, Expr)
+    parseOpAndNum = choice
+      [ do
+          _ <- string " plus "
+          e <- parseNumOrThat
+          pure (Add, e)
+      , do
+          _ <- string " minus "
+          e <- parseNumOrThat
+          pure (Sub, e)
+      , do
+          _ <- string " times "
+          e <- parseNumOrThat
+          pure (Mul, e)
+      ]
+
+
+-- | Pattern matches on the parsed Request, executes the appropriate IO actions 
+-- (like fetching the time or calling an API), and returns the updated memory state.
 respondTo :: [(String, String)] -> Request -> IO [(String, String)]
 
 respondTo mem Hello = do
@@ -162,7 +214,6 @@ respondTo mem (Remember name thing) = do
   pure ((name, thing) : mem)
 
 respondTo mem (TellMeAbout name) = do
-  -- lookup: searches our [(String, String)] for the name
   case lookup name mem of
     Just thing -> putStrLn ("Sure - " ++ name ++ " is " ++ thing ++ ".")
     Nothing    -> putStrLn ("Sorry, I don't know anything about " ++ name ++ ".")
@@ -186,16 +237,10 @@ respondTo mem WeatherTomorrow = do
   pure mem
 
 
--- | Expression Parsing 
-
-data Expr
-  = Num Int
-  | Add Expr Expr
-  | Sub Expr Expr
-  | Mul Expr Expr
-  | That
-  deriving (Eq, Show)
-
+-- | Evaluates the parsed expression.
+-- I opted to return an "Either String Int" instead of a plain "Int". 
+-- This allows the program to catch and report errors (like the user 
+-- referencing "That" before any math has been evaluated) without crashing the chatbot.
 evaluateExpr :: [(String, String)] -> Expr -> Either String Int
 evaluateExpr _   (Num n)     = Right n
 evaluateExpr mem That        =
@@ -218,37 +263,4 @@ evaluateExpr mem (Mul e1 e2) = do
   v1 <- evaluateExpr mem e1
   v2 <- evaluateExpr mem e2
   pure (v1 * v2)
-
-
-parseExpr :: Parser Expr
-parseExpr = do
-  firstExpr <- parseNumOrThat
-  operations <- many parseOpAndNum
-  -- foldl for left-to-right
-  pure ( foldl (\acc (opCtor, nextExpr) -> opCtor acc nextExpr) firstExpr operations )
-  where
-    -- A helper that looks for "that" or a longhand number
-    parseNumOrThat :: Parser Expr
-    parseNumOrThat = choice
-      [ do
-          _ <- string "that"
-          pure That
-      , do
-          Num <$> parseLonghand
-      ]
-
-    parseOpAndNum :: Parser (Expr -> Expr -> Expr, Expr)
-    parseOpAndNum = choice
-      [ do
-          _ <- string " plus "
-          e <- parseNumOrThat
-          pure (Add, e)
-      , do
-          _ <- string " minus "
-          e <- parseNumOrThat
-          pure (Sub, e)
-      , do
-          _ <- string " times "
-          e <- parseNumOrThat
-          pure (Mul, e)
-      ]
+--------------------------------------------------------------------------------

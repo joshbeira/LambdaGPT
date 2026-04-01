@@ -46,12 +46,12 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
-bindir     = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT-main\\.stack-work\\install\\ffeefe11\\bin"
-libdir     = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT-main\\.stack-work\\install\\ffeefe11\\lib\\x86_64-windows-ghc-9.8.4\\lgpt-0.1.0.0-1ANLwuohFmz58Pnaj4nZqS"
-dynlibdir  = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT-main\\.stack-work\\install\\ffeefe11\\lib\\x86_64-windows-ghc-9.8.4"
-datadir    = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT-main\\.stack-work\\install\\ffeefe11\\share\\x86_64-windows-ghc-9.8.4\\lgpt-0.1.0.0"
-libexecdir = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT-main\\.stack-work\\install\\ffeefe11\\libexec\\x86_64-windows-ghc-9.8.4\\lgpt-0.1.0.0"
-sysconfdir = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT-main\\.stack-work\\install\\ffeefe11\\etc"
+bindir     = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT\\.stack-work\\install\\ffeefe11\\bin"
+libdir     = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT\\.stack-work\\install\\ffeefe11\\lib\\x86_64-windows-ghc-9.8.4\\lgpt-0.1.0.0-1ANLwuohFmz58Pnaj4nZqS"
+dynlibdir  = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT\\.stack-work\\install\\ffeefe11\\lib\\x86_64-windows-ghc-9.8.4"
+datadir    = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT\\.stack-work\\install\\ffeefe11\\share\\x86_64-windows-ghc-9.8.4\\lgpt-0.1.0.0"
+libexecdir = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT\\.stack-work\\install\\ffeefe11\\libexec\\x86_64-windows-ghc-9.8.4\\lgpt-0.1.0.0"
+sysconfdir = "C:\\Users\\Parham\\OneDrive\\Desktop\\cw2\\LambdaGPT\\.stack-work\\install\\ffeefe11\\etc"
 
 getBinDir     = catchIO (getEnv "lgpt_bindir")     (\_ -> return bindir)
 getLibDir     = catchIO (getEnv "lgpt_libdir")     (\_ -> return libdir)
