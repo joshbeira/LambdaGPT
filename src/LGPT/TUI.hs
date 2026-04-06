@@ -103,7 +103,7 @@ parseRequest = choice
       expr <- parseExpr
       _ <- optional (char '?')
       _ <- space
-      pure (WhatIs expr)
+        pure (WhatIs expr)
 
   , try $ do
       _ <- string' "remember that " 
