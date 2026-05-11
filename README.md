@@ -1,4 +1,4 @@
-# Coursework Two: λGPT - Report
+# λGPT
 
 ## Implementation Overview & Architectural Choices
 The target of this coursework was to create a natural language REPL interface using monadic parser combinators rather than LLMs. To ensure high maintainability and exceptional robustness, several architectural choices were made:
